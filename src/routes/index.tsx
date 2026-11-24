@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { PublicLayout } from "@/components/PublicLayout";
 import { useI18n } from "@/lib/i18n";
+import ragoujHero from "@/assets/ragouj-hero.jpg";
+import ragoujCourtyard from "@/assets/ragouj-courtyard.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -72,11 +74,13 @@ function HomePage() {
       {/* Editorial Hero */}
       <section className="relative overflow-hidden bg-forest text-primary-foreground">
         <img
-          src="/images/hero-women-farmers.jpg"
+          src={ragoujHero}
+          width={1920}
+          height={1088}
           alt={t("Women farmers collaborating in Tunisian agricultural fields", "Agricultrices collaborant dans les champs", "نساء فلاحات يعملن معاً في الحقول")}
-          className="absolute inset-0 h-full w-full object-cover opacity-35"
+          className="absolute inset-0 h-full w-full object-cover opacity-55"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-forest/95 via-forest/80 to-forest/45" />
+        <div className="absolute inset-0 bg-gradient-to-r from-forest/92 via-forest/65 to-forest/25" />
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
           <p className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-forest/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
             {t("Tunisian & North African AgriTech", "AgriTech Tunisie & Afrique du Nord", "التكنولوجيا الزراعية في تونس وشمال أفريقيا")}
@@ -143,11 +147,14 @@ function HomePage() {
               </p>
             </div>
           </div>
-          <div className="relative overflow-hidden rounded-3xl border border-gold/35 bg-card p-3 shadow-sm">
+          <div className="ragouj-arch-frame relative overflow-hidden border-2 border-gold/55 bg-card p-3">
             <img
-              src="/images/drone-fields.jpg"
+              src={ragoujCourtyard}
+              loading="lazy"
+              width={1280}
+              height={896}
               alt={t("Agricultural drone monitoring fields", "Drone agricole surveillant les parcelles", "طائرة مسيّرة تراقب الحقول الفلاحية")}
-              className="h-80 w-full rounded-2xl object-cover"
+              className="ragouj-arch-frame h-96 w-full object-cover"
             />
           </div>
         </div>
