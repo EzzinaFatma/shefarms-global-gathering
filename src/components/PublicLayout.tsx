@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Globe, Menu, X, Sprout, ArrowUpRight } from "lucide-react";
+import { Globe, Menu, X, Sprout, ArrowUpRight, LogOut } from "lucide-react";
 import { useI18n, type Language } from "@/lib/i18n";
+import { useAuthSession } from "@/lib/use-auth-session";
 
 const LANGUAGES: { code: Language; label: string }[] = [
   { code: "en", label: "EN" },
@@ -11,8 +12,10 @@ const LANGUAGES: { code: Language; label: string }[] = [
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   const { lang, setLang, t } = useI18n();
+  const { auth, signOut } = useAuthSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const workspaceRoute = auth?.role === "engineer" ? "/engineer" : "/dashboard";
 
   const navItems = [
     { to: "/" as const, label: t("Home", "Accueil", "الرئيسية") },
@@ -71,19 +74,43 @@ export function PublicLayout({ children }: { children: ReactNode }) {
               ))}
             </div>
 
-            <Link
-              to="/login"
-              className="rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
-            >
-              {t("Sign In", "Connexion", "تسجيل الدخول")}
-            </Link>
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-forest"
-            >
-              {t("Dashboard", "Tableau de bord", "لوحة التحكم")}
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
+            {auth ? (
+              <>
+                <Link
+                  to={workspaceRoute}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-forest"
+                >
+                  {auth.role === "engineer"
+                    ? t("Engineer Console", "Console Ingénieur", "لوحة المهندس")
+                    : t("Dashboard", "Tableau de bord", "لوحة التحكم")}
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={signOut}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  {t("Sign Out", "Déconnexion", "خروج")}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                >
+                  {t("Sign In", "Connexion", "تسجيل الدخول")}
+                </Link>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-forest"
+                >
+                  {t("Join SheFarms", "S'inscrire", "انضم الآن")}
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </>
+            )}
           </div>
 
           <button

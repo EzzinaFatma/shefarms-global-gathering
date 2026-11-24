@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { PublicLayout } from "@/components/PublicLayout";
+import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/reset-password")({
@@ -24,16 +25,24 @@ function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (password.length < 6 || password !== confirm) {
       setError(t("Passwords must match and be at least 6 characters.", "Les mots de passe doivent correspondre (6+ caractères).", "يجب أن تتطابق كلمتا المرور (6 أحرف على الأقل)."));
       return;
     }
     setError("");
-    toast.success(t("Password updated (demo flow).", "Mot de passe mis à jour (démonstration).", "تم تحديث كلمة المرور (تجريبي)."));
-    void navigate({ to: "/login" });
+    setSubmitting(true);
+    const { error: updateError } = await supabase.auth.updateUser({ password });
+    setSubmitting(false);
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+    toast.success(t("Password updated successfully.", "Mot de passe mis à jour.", "تم تحديث كلمة المرور بنجاح."));
+    await navigate({ to: "/login", replace: true });
   };
 
   return (
@@ -51,8 +60,8 @@ function ResetPasswordPage() {
               <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm" />
             </div>
             {error && <p className="text-xs text-destructive">{error}</p>}
-            <button type="submit" className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground">
-              {t("Update Password", "Mettre à jour", "تحديث كلمة المرور")}
+            <button type="submit" disabled={submitting} className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground disabled:opacity-50">
+              {submitting ? t("Updating...", "Mise à jour...", "جاري التحديث...") : t("Update Password", "Mettre à jour", "تحديث كلمة المرور")}
             </button>
           </form>
         </div>

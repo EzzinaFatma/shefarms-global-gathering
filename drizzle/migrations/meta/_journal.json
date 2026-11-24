@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1795560754243,
+      "tag": "0000_shefarms_two_role_rbac",
+      "breakpoints": true
+    }
+  ]
+}

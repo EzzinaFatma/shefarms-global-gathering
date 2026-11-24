@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   CheckSquare,
@@ -15,7 +15,11 @@ import {
   X,
   Globe,
   Home,
+  LogOut,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { getAuthContext } from "@/lib/auth.functions";
+import { useAuthSession } from "@/lib/use-auth-session";
 import { useI18n, type Language } from "@/lib/i18n";
 import {
   INITIAL_CALENDAR,
@@ -47,6 +51,17 @@ import ragoujHero from "@/assets/ragouj-hero.jpg";
 import ragoujHeroVideo from "@/assets/ragouj-hero.mp4.asset.json";
 
 export const Route = createFileRoute("/dashboard")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) {
+      throw redirect({ to: "/login" });
+    }
+    const authCtx = await getAuthContext();
+    if (authCtx.role === "engineer") {
+      throw redirect({ to: "/engineer" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Agricultural Management Dashboard — SheFarms" },
@@ -62,6 +77,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardPage() {
   const { lang, setLang, t } = useI18n();
+  const { auth, signOut } = useAuthSession();
   const [activeTab, setActiveTab] = useState("overview");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -132,11 +148,22 @@ function DashboardPage() {
             );
           })}
         </nav>
-        <div className="border-t border-sidebar-border p-4">
+        <div className="space-y-2 border-t border-sidebar-border p-4">
+          {auth?.email && (
+            <p className="truncate text-[11px] text-sidebar-foreground/65">{auth.email}</p>
+          )}
           <Link to="/" className="flex items-center gap-2 text-xs text-sidebar-foreground/80 hover:text-gold">
             <Home className="h-4 w-4" />
             {t("Back to Public Site", "Retour au site public", "العودة للموقع الرئيسي")}
           </Link>
+          <button
+            type="button"
+            onClick={signOut}
+            className="flex w-full items-center gap-2 text-xs text-terracotta hover:underline"
+          >
+            <LogOut className="h-4 w-4" />
+            {t("Sign Out", "Déconnexion", "تسجيل الخروج")}
+          </button>
         </div>
       </aside>
 

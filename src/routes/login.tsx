@@ -1,7 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { PublicLayout } from "@/components/PublicLayout";
+import { supabase } from "@/integrations/supabase/client";
+import { getAuthContext } from "@/lib/auth.functions";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/login")({
@@ -21,19 +24,38 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("amina@shefarms.tn");
-  const [password, setPassword] = useState("demo1234");
+  const fetchAuth = useServerFn(getAuthContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email.includes("@") || password.length < 6) {
       setError(t("Enter a valid email and a password of at least 6 characters.", "Saisissez un e-mail valide et un mot de passe d'au moins 6 caractères.", "أدخل بريداً إلكترونياً صحيحاً وكلمة مرور من 6 أحرف على الأقل."));
       return;
     }
     setError("");
-    toast.success(t("Signed in (demo session)", "Connecté (session de démonstration)", "تم تسجيل الدخول (جلسة تجريبية)"));
-    void navigate({ to: "/dashboard" });
+    setSubmitting(true);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (signInError) {
+      setSubmitting(false);
+      setError(signInError.message);
+      return;
+    }
+    try {
+      const ctx = await fetchAuth();
+      toast.success(t("Signed in successfully", "Connexion réussie", "تم تسجيل الدخول بنجاح"));
+      await navigate({ to: ctx.role === "engineer" ? "/engineer" : "/dashboard", replace: true });
+    } catch {
+      await navigate({ to: "/dashboard", replace: true });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -54,8 +76,8 @@ function LoginPage() {
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm" />
             </div>
             {error && <p className="text-xs text-destructive">{error}</p>}
-            <button type="submit" className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-forest">
-              {t("Sign In", "Se connecter", "تسجيل الدخول")}
+            <button type="submit" disabled={submitting} className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-forest disabled:opacity-50">
+              {submitting ? t("Signing in...", "Connexion...", "جاري الدخول...") : t("Sign In", "Se connecter", "تسجيل الدخول")}
             </button>
           </form>
 

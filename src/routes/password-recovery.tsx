@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { PublicLayout } from "@/components/PublicLayout";
+import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/password-recovery")({
@@ -22,15 +23,25 @@ function PasswordRecoveryPage() {
   const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email.includes("@")) {
       toast.error(t("Please enter a valid email address.", "Veuillez saisir un e-mail valide.", "يرجى إدخال بريد إلكتروني صحيح."));
       return;
     }
+    setSubmitting(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setSent(true);
-    toast.success(t("Reset link prepared (demo flow).", "Lien de réinitialisation prêt (démonstration).", "تم تجهيز رابط الاستعادة (تجريبي)."));
+    toast.success(t("Password reset email sent.", "E-mail de réinitialisation envoyé.", "تم إرسال رابط استعادة كلمة المرور."));
   };
 
   return (
@@ -41,11 +52,8 @@ function PasswordRecoveryPage() {
           {sent ? (
             <div className="mt-5 space-y-4">
               <p className="text-sm text-muted-foreground">
-                {t("In this frontend demonstration, you can proceed directly to the password reset page.", "Dans cette démonstration, vous pouvez accéder directement à la page de réinitialisation.", "في هذه النسخة التجريبية يمكنك الانتقال مباشرة إلى صفحة تعيين كلمة المرور.")}
+                {t("Check your inbox for the password recovery link. Opening it will bring you back to set a new password.", "Vérifiez votre boîte de réception pour le lien de récupération.", "تحقق من بريدك الإلكتروني لفتح رابط استعادة كلمة المرور.")}
               </p>
-              <Link to="/reset-password" className="block w-full rounded-full bg-primary py-3 text-center text-sm font-semibold text-primary-foreground">
-                {t("Continue to Reset Password", "Réinitialiser le mot de passe", "متابعة تعيين كلمة المرور")}
-              </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -53,8 +61,8 @@ function PasswordRecoveryPage() {
                 <label className="mb-1 block text-xs font-semibold">{t("Account Email", "E-mail du compte", "البريد الإلكتروني")}</label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm" placeholder="amina@shefarms.tn" />
               </div>
-              <button type="submit" className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground">
-                {t("Send Recovery Link", "Envoyer le lien", "إرسال رابط الاستعادة")}
+              <button type="submit" disabled={submitting} className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground disabled:opacity-50">
+                {submitting ? t("Sending...", "Envoi...", "جاري الإرسال...") : t("Send Recovery Link", "Envoyer le lien", "إرسال رابط الاستعادة")}
               </button>
             </form>
           )}
