@@ -15,6 +15,7 @@ import {
 import { PublicLayout } from "@/components/PublicLayout";
 import { useI18n } from "@/lib/i18n";
 import ragoujHero from "@/assets/ragouj-hero.jpg";
+import ragoujHeroVideo from "@/assets/ragouj-hero.mp4.asset.json";
 import ragoujCourtyard from "@/assets/ragouj-courtyard.jpg";
 
 export const Route = createFileRoute("/")({
@@ -73,14 +74,18 @@ function HomePage() {
     <PublicLayout>
       {/* Editorial Hero */}
       <section className="relative overflow-hidden bg-forest text-primary-foreground">
-        <img
-          src={ragoujHero}
-          width={1920}
-          height={1088}
-          alt={t("Women farmers collaborating in Tunisian agricultural fields", "Agricultrices collaborant dans les champs", "نساء فلاحات يعملن معاً في الحقول")}
-          className="absolute inset-0 h-full w-full object-cover opacity-55"
+        <video
+          src={ragoujHeroVideo.url}
+          poster={ragoujHero}
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-label={t("Golden-hour rural Tunisian village scene", "Scène cinématographique d'un village rural tunisien", "مشهد سينمائي لقرية ريفية تونسية")}
+          className="absolute inset-0 h-full w-full object-cover opacity-65"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-forest/92 via-forest/65 to-forest/25" />
+        <div className="absolute inset-0 bg-gradient-to-r from-forest/90 via-forest/55 to-forest/20" />
+        <div className="ragouj-film-grain pointer-events-none absolute inset-0" />
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
           <p className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-forest/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
             {t("Tunisian & North African AgriTech", "AgriTech Tunisie & Afrique du Nord", "التكنولوجيا الزراعية في تونس وشمال أفريقيا")}

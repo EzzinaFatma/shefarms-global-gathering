@@ -43,6 +43,8 @@ import { FinancialModule } from "@/components/dashboard/FinancialModule";
 import { LearningModule } from "@/components/dashboard/LearningModule";
 import { CommunityModule } from "@/components/dashboard/CommunityModule";
 import { MobilityModule } from "@/components/dashboard/MobilityModule";
+import ragoujHero from "@/assets/ragouj-hero.jpg";
+import ragoujHeroVideo from "@/assets/ragouj-hero.mp4.asset.json";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -172,7 +174,7 @@ function DashboardPage() {
       )}
 
       {/* Main Workspace */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="ragouj-plaster flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur-md sm:px-6">
           <div className="flex items-center gap-3">
             <button type="button" onClick={() => setMobileNavOpen(true)} className="rounded-lg border border-border p-2 lg:hidden" aria-label="Open menu">
@@ -201,7 +203,30 @@ function DashboardPage() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           {activeTab === "overview" && (
-            <OverviewModule tasks={tasks} soilReadings={soilReadings} netProfitTnd={netProfitTnd} onNavigate={setActiveTab} />
+            <div className="space-y-6">
+              <div className="relative overflow-hidden rounded-2xl border border-gold/45 bg-forest text-primary-foreground shadow-md">
+                <video
+                  src={ragoujHeroVideo.url}
+                  poster={ragoujHero}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="h-44 w-full object-cover opacity-65 sm:h-52"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-forest/90 via-forest/50 to-transparent" />
+                <div className="ragouj-film-grain pointer-events-none absolute inset-0" />
+                <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-7">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gold">
+                    {t("Ragouj Rural Cooperative · Live Field Scene", "Coopérative Rurale de Ragouj · Scène en Direct", "تعاونية رقوج الفلاحية · مشهد مباشر من القرية")}
+                  </p>
+                  <h2 className="mt-1 font-editorial text-2xl font-bold sm:text-4xl">
+                    {t("Welcome Inside the Village Fields", "Bienvenue au Cœur des Terres de Ragouj", "مرحباً بكم في قلب أراضي رقوج")}
+                  </h2>
+                </div>
+              </div>
+              <OverviewModule tasks={tasks} soilReadings={soilReadings} netProfitTnd={netProfitTnd} onNavigate={setActiveTab} />
+            </div>
           )}
           {activeTab === "tasks" && <TasksModule tasks={tasks} onChange={updateTasks} />}
           {activeTab === "calendar" && <CalendarModule activities={calendar} onChange={updateCalendar} />}
