@@ -13,6 +13,7 @@ import {
   Layers,
 } from "lucide-react";
 import { PublicLayout } from "@/components/PublicLayout";
+import { SceneFilmstrip } from "@/components/SceneFilmstrip";
 import { useI18n } from "@/lib/i18n";
 import ragoujHero from "@/assets/ragouj-hero.jpg";
 import ragoujHeroVideo from "@/assets/ragouj-hero.mp4.asset.json";
@@ -164,6 +165,8 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      <SceneFilmstrip />
 
       <div className="shefarms-divider mx-auto max-w-5xl" />
 

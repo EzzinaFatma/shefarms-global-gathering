@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Compass, Eye, HeartHandshake, Sprout, Globe2 } from "lucide-react";
 import { PublicLayout } from "@/components/PublicLayout";
 import { useI18n } from "@/lib/i18n";
+import circleScene from "@/assets/ragouj-scenes/ragouj-farmers-circle.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -56,6 +57,42 @@ function AboutPage() {
               </div>
             );
           })}
+        </div>
+
+        <div className="mt-14 grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center">
+          <div className="ragouj-arch-frame relative overflow-hidden border-2 border-gold/55 bg-card p-3">
+            <img
+              src={circleScene}
+              loading="lazy"
+              width={1536}
+              height={1024}
+              alt={t(
+                "Women farmers meeting in a shaded courtyard",
+                "Réunion d'agricultrices dans une cour ombragée",
+                "لقاء الفلاحات في دار مظللة"
+              )}
+              className="ragouj-arch-frame h-80 w-full object-cover"
+            />
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-terracotta">
+              {t("From the Field", "Du Terrain", "من الحقل")}
+            </p>
+            <h2 className="mt-3 font-editorial text-3xl font-bold text-forest sm:text-4xl">
+              {t(
+                "Decisions Made Together, Under the Same Pergola",
+                "Des décisions prises ensemble, sous la treille",
+                "قرارات تُتخذ معاََ تحت العريشة"
+              )}
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {t(
+                "Every SheFarms feature starts from a real rural scene like this one: women gathering, sharing tools, comparing notes, and agreeing on what the season needs next.",
+                "Chaque fonctionnalité SheFarms part d'une scène rurelle réelle : des femmes réunies, partageant l'outillage et décidant ensemble de la suite de la saison.",
+                "كل ميزة في شي فارمز تنطلق من مشهد ريفي حقيقي: نساء يجتمعن ويتبادلن المعدات ويقررن معاً ما يحتاجه الموسم."
+              )}
+            </p>
+          </div>
         </div>
 
         <div className="mt-14 grid gap-8 rounded-3xl border border-gold/35 bg-secondary/40 p-8 md:grid-cols-2">
